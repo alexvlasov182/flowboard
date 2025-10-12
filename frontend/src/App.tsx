@@ -15,9 +15,9 @@ export default function App() {
 
   // download all users
   useEffect(() => {
-    fetch(`${apiUrl}/users`)
+    fetch(`${apiUrl}/api/users`)
       .then(res => res.json())
-      .then(data => setUsers(data))
+      .then(data => setUsers(data.data))
       .catch(err => console.error(err));
   }, [apiUrl]);
 
@@ -25,15 +25,16 @@ export default function App() {
   const handleAddUser = async () => {
   if (!name || !email) return;
   try {
-    const res = await fetch(`${apiUrl}/users`, {
+    const res = await fetch(`${apiUrl}/api/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email }),
     });
 
-    if (res.ok) {
-      const updatedUsers = await res.json();
-      setUsers(updatedUsers); // update frontend immediately
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      setUsers(data.data);
       setName("");
       setEmail("");
     } else {
@@ -45,14 +46,18 @@ export default function App() {
   }
 };
 
-
   const handleDeleteUser = async (id: number) => {
-    const res = await fetch(`${apiUrl}/users/${id}`, {method: "DELETE"});
-    if (res.ok) {
-      const updatedUsers = await res.json();
-      setUsers(updatedUsers);
-    } else {
-      console.log("Faild to delete user");
+    try {
+      const res = await fetch(`${apiUrl}/api/users/${id}`, {method: "DELETE"});
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        setUsers(data.data);
+      } else {
+        console.error("Failed to delete user:", data.error);
+      }
+    } catch (err) {
+      console.error("Network error:", err)
     }
   }
 

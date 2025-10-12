@@ -9,7 +9,19 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  name  String
-  email String  @unique
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  pages     Page[]
+  createdAt DateTime @default(now())
+}
+
+model Page {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
