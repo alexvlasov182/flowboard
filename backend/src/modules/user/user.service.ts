@@ -41,6 +41,10 @@ export const createUser = async (data: CreateUserDTO) => {
 }
 
 export const deleteUser = async (id: number) => {
+  //delete all pages first
+  await prisma.page.deleteMany({where: {userId: id}});
+
+  // then delete user
   return prisma.user.delete({where: {id}});
 }
 
