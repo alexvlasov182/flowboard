@@ -1,16 +1,43 @@
+import { Prisma } from '../../generated/prisma';
 import {prisma} from '../../utils/prisma';
 import { CreateUserDTO } from './user.types';
+import bcrypt from 'bcryptjs';
 
-export const getAllUsers = async () => {
-  return prisma.user.findMany({orderBy: {createdAt: 'desc'}});
+export const getAllUsers = async (page = 1, limit = 10, search = "") => {
+  const skip = (page - 1) * limit;
+
+  const where: Prisma.UserWhereInput = search
+  ? {
+      OR: [
+        { name: { contains: search, mode: Prisma.QueryMode.insensitive } },
+        { email: { contains: search, mode: Prisma.QueryMode.insensitive } },
+      ],
+    }
+  : {};
+
+  const users = await prisma.user.findMany({
+    where,
+    skip,
+    take: limit,
+    orderBy: { createdAt: 'desc' },
+    select: { id: true, name: true, email: true, createdAt: true }, // hide password
+  });
+
+  const total = await prisma.user.count({ where });
+
+  return { users, total, page, limit };
 };
+
 
 export const getUserById = async (id: number) => {
   return prisma.user.findUnique({where: {id}});
 }
 
 export const createUser = async (data: CreateUserDTO) => {
-  return prisma.user.create({data});
+  const hashedPassword = await bcrypt.hash(data.password, 10);
+  return prisma.user.create({
+    data: {...data, password: hashedPassword}
+  });
 }
 
 export const deleteUser = async (id: number) => {

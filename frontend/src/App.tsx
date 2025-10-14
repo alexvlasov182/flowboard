@@ -17,41 +17,44 @@ export default function App() {
   useEffect(() => {
     fetch(`${apiUrl}/api/users`)
       .then(res => res.json())
-      .then(data => setUsers(data.data))
+      .then(data => setUsers(Array.isArray(data.data?.users) ? data.data.users : []))
       .catch(err => console.error(err));
   }, [apiUrl]);
 
   // create new user
   const handleAddUser = async () => {
-  if (!name || !email) return;
-  try {
-    const res = await fetch(`${apiUrl}/api/users`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password: "123456" }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-      setUsers(data.data);
-      setName("");
-      setEmail("");
-    }
-  } catch (err) {
-    console.error("Network error:", err);
-  }
-};
-
-  const handleDeleteUser = async (id: number) => {
+    if (!name || !email) return;
     try {
-      const res = await fetch(`${apiUrl}/api/users/${id}`, {method: "DELETE"});
+      const res = await fetch(`${apiUrl}/api/users`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password: "123456" }),
+      });
+
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setUsers(data.data);
-      } else {
-        console.error("Failed to delete user:", data.error);
+        // Instead of replacing the whole array, append the new user
+        const newUser = data.data?.newUser; // make backend return the created user
+        if (newUser) {
+          setUsers(prev => [...prev, newUser]);
+        }
+        setName("");
+        setEmail("");
+      }
+    } catch (err) {
+      console.error("Network error:", err);
+    }
+  };
+
+  const handleDeleteUser = async (id: number) => {
+    try {
+      const res = await fetch(`${apiUrl}/api/users/${id}`, { method: "DELETE" });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        // Remove the deleted user from state
+        setUsers(prev => prev.filter(u => u.id !== id));
       }
     } catch (err) {
       console.error("Network error:", err)
@@ -161,7 +164,7 @@ export default function App() {
                 <div style={{ fontSize: 13, color: "#555" }}>{u.email}</div>
               </span>
               <button
-              onClick={() => handleDeleteUser(u.id)}
+                onClick={() => handleDeleteUser(u.id)}
                 style={{
                   border: "none",
                   background: "transparent",
@@ -169,7 +172,7 @@ export default function App() {
                   cursor: "pointer",
                   fontSize: 14,
                 }}
-                
+
               >
                 ✕
               </button>

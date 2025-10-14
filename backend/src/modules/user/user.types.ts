@@ -1,16 +1,9 @@
-export interface CreateUserDTO {
-  name: string;
-  email: string;
-  password: string;
-}
+import { z } from 'zod';
 
-export interface CreatePageDTO {
-  title: string;
-  content?: string;
-  userId: number;
-}
+export const CreateUserSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  password: z.string().min(6),
+});
 
-export interface UpdatePageDTO {
-  title?: string;
-  content?: string;
-}
+export type CreateUserDTO = z.infer<typeof CreateUserSchema>;

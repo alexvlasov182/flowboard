@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as pageService from "./page.service";
-import {CreatePageDTO, UpdatePageDTO} from '../user/user.types';
+import {CreatePageDTO, UpdatePageDTO} from '../page/page.types';
 
 export const getPages = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -14,8 +14,9 @@ export const getPages = async (req: Request, res: Response, next: NextFunction) 
 export const getUserPages = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = Number(req.params.userId);
+    if (isNaN(userId)) return res.status(400).json({success: false, message: "Invalid userId"});
     const pages = await pageService.getUserPages(userId);
-    res.status(201).json({success: true, data: pages})
+    res.status(200).json({success: true, data: pages})
   } catch (error) {
     next(error)
   }

@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import {Prisma} from "@prisma/client"
 import {prisma} from "../../utils/prisma";
 import {SignupInput, LoginInput, AuthTokenPayload} from "./auth.types";
 
