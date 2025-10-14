@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import userRoutes from "./modules/user/user.routes"
 import pageRoutes from './modules/page/page.routes';
+import authRoutes from './modules/auth/auth.routes';
 import { errorHandler } from "./middlewares/errorHandler";
 import { setupSwagger } from './swagger';
 
@@ -14,6 +15,7 @@ app.use(express.json());
 // routes
 app.use("/api/users", userRoutes);
 app.use("/api/pages", pageRoutes);
+app.use("/api/auth", authRoutes);
 
 
 setupSwagger(app);
