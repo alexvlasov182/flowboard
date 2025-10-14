@@ -1,5 +1,5 @@
-import {prisma} from '../utils/prisma';
-import { CreateUserDTO } from '../types/user';
+import {prisma} from '../../utils/prisma';
+import { CreateUserDTO } from './user.types';
 
 export const getAllUsers = async () => {
   return prisma.user.findMany({orderBy: {createdAt: 'desc'}});

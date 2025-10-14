@@ -1,5 +1,5 @@
-import {prisma} from "../utils/prisma";
-import {CreatePageDTO} from '../types/user';
+import {prisma} from "../../utils/prisma";
+import {CreatePageDTO, UpdatePageDTO} from '../user/user.types';
 
 export const getAllPages = async () => {
   return prisma.page.findMany({include: {user: true}, orderBy: {createdAt: "desc"}});
@@ -13,7 +13,7 @@ export const createPage = async (data: CreatePageDTO) => {
   return prisma.page.create({data});
 }
 
-export const updatePage = async (id: number, data: CreatePageDTO) => {
+export const updatePage = async (id: number, data: UpdatePageDTO) => {
   return prisma.page.update({where: {id}, data})
 }
 

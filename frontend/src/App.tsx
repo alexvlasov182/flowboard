@@ -28,7 +28,7 @@ export default function App() {
     const res = await fetch(`${apiUrl}/api/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email }),
+      body: JSON.stringify({ name, email, password: "123456" }),
     });
 
     const data = await res.json();
@@ -37,9 +37,6 @@ export default function App() {
       setUsers(data.data);
       setName("");
       setEmail("");
-    } else {
-      const error = await res.json();
-      console.error("Failed to add user:", error.error);
     }
   } catch (err) {
     console.error("Network error:", err);

@@ -1,5 +1,5 @@
 import {Request, Response, NextFunction} from 'express'
-import * as userService from '../services/user.service';
+import * as userService from '../user/user.service';
 
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
@@ -13,8 +13,8 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
 
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {name, email} = req.body;
-    await userService.createUser({name, email});
+    const {name, email, password} = req.body;
+    await userService.createUser({name, email, password});
     const users = await userService.getAllUsers();
     res.status(201).json({success: true, data: users});
   } catch (error) {

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import * as pageService from "../services/page.service";
+import * as pageService from "./page.service";
+import {CreatePageDTO, UpdatePageDTO} from '../user/user.types';
 
 export const getPages = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -20,13 +21,24 @@ export const getUserPages = async (req: Request, res: Response, next: NextFuncti
   }
 }
 
-export const createPage = async (req: Request, res: Response, next: NextFunction) => {
+export const createPage = async (req: Request<{}, {}, CreatePageDTO>, res: Response, next: NextFunction) => {
   try {
     const {title, content, userId} = req.body;
     const page = await pageService.createPage({title, content, userId});
     res.status(201).json({success: true, data: page});
   } catch (error) {
     next(error)
+  }
+}
+
+export const updatePage = async (req: Request<{id: string}, {}, UpdatePageDTO>, res: Response, next: NextFunction) => {
+  try {
+    const id = Number(req.params.id);
+    const {title, content} = req.body;
+    const page = await pageService.updatePage(id, {title, content});
+    res.json({success: true, data: page});
+  } catch (error) {
+    next(error);
   }
 }
 
