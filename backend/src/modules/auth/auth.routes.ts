@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import {signup, login} from "./auth.controller";
+import { signup, login } from './auth.controller';
 
 const router = Router();
 
@@ -30,7 +30,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
  */
-router.post("/signup", signup);
+router.post('/signup', signup);
 
 /**
  * @swagger
@@ -52,6 +52,6 @@ router.post("/signup", signup);
  *             schema:
  *               $ref: '#/components/schemas/AuthResponse'
  */
-router.post("/login", login);
+router.post('/login', login);
 
 export default router;
