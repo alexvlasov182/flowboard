@@ -15,7 +15,7 @@ export default function PageList() {
   const userPages = pages.filter((p: { userId: number }) => p.userId === user?.id);
 
   return (
-    <div className="relative flex flex-col items-center min-h-screen bg-gray-50 py-16 px-4">
+    <div className="relative flex flex-col items-center min-h-screen py-16 px-4">
       <div className="w-full max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-10">

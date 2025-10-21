@@ -25,9 +25,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
   ];
 
   return (
-    <div className="flex min-h-screen bg-gray-50 text-gray-800">
+    <div className="flex min-h-screen bg-white/80 text-gray-800">
       {/* Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 border-r bg-white/80 backdrop-blur-md p-6">
+      <aside className="hidden md:flex flex-col w-64 border-r bg-gray-50 backdrop-blur-md p-6">
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight mb-1">FlowBoard</h1>
           <span className="text-sm text-gray-500">Hi, {user.name}</span>
@@ -41,11 +41,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 key={item.path}
                 to={item.path}
                 className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all
-                  ${
-                    isActive
-                      ? 'bg-brand-100 text-brand-700'
-                      : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                  }`}
+                  ${isActive ? 'bg-gray-100' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
               >
                 {item.icon}
                 {item.label}

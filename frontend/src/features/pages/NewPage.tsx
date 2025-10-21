@@ -28,7 +28,7 @@ export default function NewPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="bg-white p-8 rounded shadow w-full max-w-md">
         <h2 className="text-2xl font-semibold mb-6">New Page</h2>
         <input

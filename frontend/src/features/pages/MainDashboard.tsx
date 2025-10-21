@@ -11,7 +11,7 @@ export default function MainDashboard() {
   const userPages = pages.filter((p: any) => p.userId === user?.id);
 
   return (
-    <div className="min-h-screen px-6 py-12 bg-gray-50">
+    <div className="min-h-screen px-6 py-12">
       <h1 className="text-4xl font-bold mb-6">Welcome back, {user?.name}!</h1>
 
       <div className="flex justify-between items-center mb-6">
