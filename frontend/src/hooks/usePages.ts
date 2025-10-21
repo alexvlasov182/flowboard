@@ -5,7 +5,7 @@ export function usePages() {
   return useQuery({
     queryKey: ['pages'],
     queryFn: async () => {
-      const res = await api.get('/api/pages');
+      const res = await api.get('/pages');
       return res.data; // backend returns { success, data }
     },
   });

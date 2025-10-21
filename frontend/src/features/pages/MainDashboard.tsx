@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { usePages } from '../../hooks/usePages';
-import { useAuthStore } from '../../store/authSotre';
+import { useAuthStore } from '../../store/authStore';
 
 export default function MainDashboard() {
   const { data: response } = usePages();

@@ -1,6 +1,6 @@
 import { usePages } from '../../hooks/usePages';
 import { Link } from 'react-router-dom';
-import { useAuthStore } from '../../store/authSotre';
+import { useAuthStore } from '../../store/authStore';
 import { Plus } from 'lucide-react'; // Notion-like icon
 import { motion } from 'framer-motion';
 

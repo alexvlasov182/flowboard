@@ -1,6 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../../store/authSotre';
-import { useAuthPersist } from '../../hooks/useAuth';
+import { useAuthStore } from '../../store/authStore';
 import { LogOut, FileText, Home } from 'lucide-react';
 import React from 'react';
 
@@ -9,16 +8,16 @@ type RootLayoutProps = {
 };
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  useAuthPersist();
-  const clearAuth = useAuthStore((s) => s.clearAuth);
   const user = useAuthStore((s) => s.user);
+  const clearAuth = useAuthStore((s) => s.clearAuth);
   const location = useLocation();
 
-  // If user not logged in, just render children (landing, login, signup)
-  if (!user) {
-    return <>{children || <Outlet />}</>;
-  }
+  console.log('📄 RootLayout: current user =', user);
 
+  // If no user, render content without sidebar
+  if (!user) return <>{children || <Outlet />}</>;
+
+  // Navigation items for sidebar
   const navItems = [
     { path: '/', label: 'Home', icon: <Home size={18} /> },
     { path: '/pages', label: 'Pages', icon: <FileText size={18} /> },
@@ -30,7 +29,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <aside className="hidden md:flex flex-col w-64 border-r bg-gray-50 backdrop-blur-md p-6">
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight mb-1">FlowBoard</h1>
-          <span className="text-sm text-gray-500">Hi, {user.name}</span>
+          <span className="text-sm text-gray-500">Hi, {user.name || user.email}</span>
         </div>
 
         <nav className="space-y-1">
@@ -52,7 +51,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
         <div className="mt-auto pt-6 border-t border-gray-200">
           <button
-            onClick={() => clearAuth()}
+            onClick={() => {
+              console.log('🚪 Logout button clicked');
+              clearAuth();
+            }}
             className="flex items-center justify-center gap-2 w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-md font-medium transition"
           >
             <LogOut size={16} />
@@ -61,7 +63,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         </div>
       </aside>
 
-      {/* Main */}
+      {/* Main content */}
       <main className="flex-1 px-6 md:px-12 py-10 overflow-y-auto">
         <div className="max-w-6xl mx-auto">{children || <Outlet />}</div>
       </main>

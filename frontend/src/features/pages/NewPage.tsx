@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../lib/api';
-import { useAuthStore } from '../../store/authSotre';
+import { useAuthStore } from '../../store/authStore';
 
 export default function NewPage() {
   const [title, setTitle] = useState('');
@@ -13,7 +13,7 @@ export default function NewPage() {
     if (!user) return alert('You must be logged in');
 
     try {
-      await api.post('/api/pages', {
+      await api.post('/pages', {
         title,
         content,
         userId: user.id,
