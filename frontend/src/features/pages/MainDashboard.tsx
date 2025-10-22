@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { FileText, Plus } from 'lucide-react';
 import { usePages } from '../../hooks/usePages';
 import { useAuthStore } from '../../store/authStore';
 import NewPageModal from '../pages/NewPageModal';
@@ -22,10 +21,10 @@ export default function MainDashboard() {
   if (isError) return <div className="text-center py-20 text-red-500">Error loading data</div>;
 
   return (
-    <div className="relative flex flex-col items-center min-h-screen py-16 px-4">
+    <div className="flex flex-col items-center min-h-screen py-16 px-4">
       <div className="w-full max-w-4xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
           <div>
             <h1 className="text-4xl font-bold text-gray-900">Welcome back, {user?.name} 👋</h1>
             <p className="text-gray-500 mt-2">
@@ -65,23 +64,26 @@ export default function MainDashboard() {
             ))}
           </div>
         ) : (
-          <div className="text-center mt-20 text-gray-500">
-            <p className="mb-3">You don’t have any pages yet.</p>
-            <button
-              onClick={() => setShowNewModal(true)}
-              className="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg shadow-sm transition"
-            >
-              <Plus size={18} /> Create Your First Page
-            </button>
-          </div>
-        )}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center justify-center mt-20 py-16 px-8 text-center"
+          >
+            {/* Icon */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-brand-100 rounded-full blur-2xl opacity-50"></div>
+              <div className="relative p-6 rounded-2xl">
+                <FileText size={48} className="text-gray-400" strokeWidth={1.5} />
+              </div>
+            </div>
 
-        {totalPages > 3 && (
-          <div className="text-center mt-8">
-            <Link to="/pages" className="inline-block text-brand-600 hover:underline font-medium">
-              View all pages →
-            </Link>
-          </div>
+            {/* Text */}
+            <h3 className="text-2xl font-semibold text-gray-800 mb-2">No pages yet</h3>
+            <p className="text-gray-500 text-center max-w-md mb-8">
+              You don't have any pages yet. Start creating to organize your thoughts and projects.
+            </p>
+          </motion.div>
         )}
       </div>
 

@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { usePages } from '../../hooks/usePages';
-import { Plus } from 'lucide-react';
+import { Plus, FileText, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/authStore';
 import PageModal from './PageModal';
-
 import NewPageModal from './NewPageModal';
 
 export default function PageList() {
@@ -53,15 +52,27 @@ export default function PageList() {
             ))}
           </div>
         ) : (
-          <div className="text-center mt-20 text-gray-500">
-            <p className="mb-3">You don’t have any pages yet.</p>
-            <button
-              onClick={() => setShowNewModal(true)}
-              className="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg shadow-sm transition"
-            >
-              <Plus size={18} /> New Page
-            </button>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center justify-center mt-20 py-16 px-8"
+          >
+            {/* Icon */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-brand-100 rounded-full blur-2xl opacity-50"></div>
+              <div className="relative p-6 rounded-2xl">
+                <FileText size={48} className="text-gray-400" strokeWidth={1.5} />
+              </div>
+            </div>
+
+            {/* Text */}
+            <h3 className="text-2xl font-semibold text-gray-800 mb-2">No pages yet</h3>
+            <p className="text-gray-500 text-center max-w-md mb-2">
+              Get started by creating your first page. Organize your thoughts, ideas, and projects
+              all in one place.
+            </p>
+          </motion.div>
         )}
       </div>
 
