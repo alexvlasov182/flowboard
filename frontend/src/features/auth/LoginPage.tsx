@@ -7,39 +7,52 @@ import heroImage from '../../assets/page-1.jpg';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // 👈 add this line
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // loading state
   const setAuth = useAuthStore((s) => s.setAuth);
-  const token = useAuthStore((s) => s.token);
   const navigate = useNavigate();
 
-  console.log('🔍 LoginPage render: current token =', token);
-
   const handleLogin = async () => {
-    setError(''); // clear previous errors
+    setError('');
 
+    // Client-side validation
     if (!email.trim() || !password.trim()) {
       setError('Please enter email and password');
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Invalid email format');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
 
+    setLoading(true);
     try {
       const res = await api.post('/auth/login', { email, password });
       const { token, user } = res.data?.data ?? res.data;
 
       if (token && user) {
         setAuth(user, token);
-        console.log('✅ Login successful, redirecting to /pages');
         navigate('/pages');
       } else {
         setError('Wrong email or password');
       }
     } catch (err: any) {
-      console.error('❌ Login error:', err);
-      if (err.response?.status === 401) {
+      console.error('Login error:', err);
+      const msg = err.response?.data?.message;
+
+      if (msg) {
+        setError(msg);
+      } else if (err.response?.status === 401) {
         setError('Wrong email or password');
       } else {
         setError('Something went wrong. Please try again.');
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,14 +91,16 @@ export default function LoginPage() {
               />
             </label>
 
-            {/* 👇 Inline error message */}
             {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
             <button
               onClick={handleLogin}
-              className="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-semibold transition"
+              disabled={loading} // disable button while loading
+              className={`w-full py-3 text-white rounded-lg font-semibold transition ${
+                loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-500 hover:bg-brand-600'
+              }`}
             >
-              Log In
+              {loading ? 'Logging in...' : 'Log In'}
             </button>
 
             <p className="mt-6 text-center text-gray-600">
