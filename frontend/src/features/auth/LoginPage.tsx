@@ -7,6 +7,7 @@ import heroImage from '../../assets/page-1.jpg';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // 👈 add this line
   const setAuth = useAuthStore((s) => s.setAuth);
   const token = useAuthStore((s) => s.token);
   const navigate = useNavigate();
@@ -14,13 +15,15 @@ export default function LoginPage() {
   console.log('🔍 LoginPage render: current token =', token);
 
   const handleLogin = async () => {
+    setError(''); // clear previous errors
+
     if (!email.trim() || !password.trim()) {
-      alert('Please enter email and password');
+      setError('Please enter email and password');
       return;
     }
 
     try {
-      const res = await api.post('/auth/login', { email, password }); // NOTE: match backend route
+      const res = await api.post('/auth/login', { email, password });
       const { token, user } = res.data?.data ?? res.data;
 
       if (token && user) {
@@ -28,11 +31,15 @@ export default function LoginPage() {
         console.log('✅ Login successful, redirecting to /pages');
         navigate('/pages');
       } else {
-        alert('Login failed');
+        setError('Wrong email or password');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('❌ Login error:', err);
-      alert('Login failed');
+      if (err.response?.status === 401) {
+        setError('Wrong email or password');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
     }
   };
 
@@ -60,7 +67,7 @@ export default function LoginPage() {
               />
             </label>
 
-            <label className="block mb-6">
+            <label className="block mb-2">
               <span className="text-gray-700">Password</span>
               <input
                 type="password"
@@ -70,6 +77,9 @@ export default function LoginPage() {
                 placeholder="********"
               />
             </label>
+
+            {/* 👇 Inline error message */}
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
             <button
               onClick={handleLogin}

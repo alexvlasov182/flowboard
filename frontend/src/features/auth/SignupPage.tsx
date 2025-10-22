@@ -8,41 +8,41 @@ export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // 👈 added
   const [isLoading, setIsLoading] = useState(false);
 
   const setAuth = useAuthStore((s) => s.setAuth);
   const navigate = useNavigate();
 
   const handleSignup = async () => {
-    // Basic client-side validation
+    setError(''); // reset previous errors
+
     if (!name.trim() || !email.trim() || !password.trim()) {
-      alert('Please fill in all fields');
+      setError('Please fill in all fields');
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Send signup request to backend
       const res = await api.post('/auth/signup', { name, email, password });
-      const { user, token } = res.data.data;
+      const { user, token } = res.data.data ?? res.data;
 
       if (user && token) {
-        // Save user + token in store
         setAuth(user, token);
         console.log('✅ Signup successful, user logged in:', user);
-
-        // Navigate to main pages after signup
         navigate('/pages');
       } else {
-        alert('Signup succeeded but no user/token returned');
+        setError('Signup succeeded but no user/token returned');
       }
     } catch (err: any) {
       console.error('❌ Signup error:', err);
-
-      // Show backend error message if available
-      const message = err.response?.data?.message || 'Signup failed';
-      alert(message);
+      const message =
+        err.response?.data?.message ||
+        (err.response?.status === 409
+          ? 'Email already in use'
+          : 'Signup failed. Please try again.');
+      setError(message);
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +83,7 @@ export default function SignupPage() {
               />
             </label>
 
-            <label className="block mb-6">
+            <label className="block mb-2">
               <span className="text-gray-700">Password</span>
               <input
                 type="password"
@@ -93,6 +93,9 @@ export default function SignupPage() {
                 className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition"
               />
             </label>
+
+            {/* 👇 Inline error message */}
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
             <button
               onClick={handleSignup}
