@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { usePages } from '../../hooks/usePages';
-import { Plus, FileText } from 'lucide-react';
+import { Plus, FileText, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/authStore';
 import { useNavigate } from 'react-router-dom';
 import PageModal from './PageModal';
 import NewPageModal from './NewPageModal';
+import DeletePageModal from '../../components/ui/DeletePageModal';
+import api from '../../lib/api';
 
 export default function PageList() {
   const { data: response, isLoading, isError, refetch } = usePages();
   const user = useAuthStore((s) => s.user);
   const [selectedPage, setSelectedPage] = useState(null);
   const [showNewModal, setShowNewModal] = useState(false);
+  const [deletePage, setDeletePage] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const navigate = useNavigate();
 
@@ -20,6 +24,24 @@ export default function PageList() {
 
   const pages = response?.data || [];
   const userPages = pages.filter((p: any) => p.userId === user?.id);
+
+  const handleDeleteConfirm = async () => {
+    if (!deletePage || isDeleting) return;
+
+    try {
+      setIsDeleting(true);
+      await api.delete(`/pages/${deletePage.id}`);
+      setDeletePage(null);
+      refetch();
+    } catch (err: any) {
+      console.error('Delete error:', err);
+      alert(
+        `Failed to delete page: ${err.response?.data?.message || err.message || 'Unknown error'}`
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="relative flex flex-col items-center min-h-screen py-16 px-4">
@@ -42,15 +64,29 @@ export default function PageList() {
                 key={page.id}
                 whileHover={{ scale: 1.01 }}
                 transition={{ type: 'spring', stiffness: 300 }}
-                onClick={() => navigate(`/pages/${page.id}`)}
-                className="block p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
+                className="relative block p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition"
               >
-                <h2 className="text-xl font-semibold text-gray-800 mb-1">
-                  {page.title || 'Untitled'}
-                </h2>
-                <p className="text-gray-500 text-sm line-clamp-2">
-                  {page.content?.slice(0, 120) || 'No content yet...'}
-                </p>
+                {/* Clickable area for navigation */}
+                <div onClick={() => navigate(`/pages/${page.id}`)} className="cursor-pointer pr-10">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-1">
+                    {page.title || 'Untitled'}
+                  </h2>
+                  <p className="text-gray-500 text-sm line-clamp-2">
+                    {page.content?.slice(0, 120) || 'No content yet...'}
+                  </p>
+                </div>
+
+                {/* Delete button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeletePage(page);
+                  }}
+                  className="absolute top-5 right-5 text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition"
+                  title="Delete page"
+                >
+                  <Trash2 size={18} />
+                </button>
               </motion.div>
             ))}
           </div>
@@ -99,6 +135,13 @@ export default function PageList() {
           onCreated={() => refetch()}
         />
       )}
+
+      <DeletePageModal
+        isOpen={!!deletePage}
+        onClose={() => setDeletePage(null)}
+        onConfirm={handleDeleteConfirm}
+        pageTitle={deletePage?.title}
+      />
     </div>
   );
 }
