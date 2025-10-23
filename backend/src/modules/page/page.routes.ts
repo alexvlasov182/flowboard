@@ -1,5 +1,12 @@
 import { Router } from 'express';
-import { createPage, getUserPages, getPages, updatePage, deletePage } from './page.controller';
+import {
+  createPage,
+  getUserPages,
+  getPages,
+  updatePage,
+  deletePage,
+  getPage,
+} from './page.controller';
 
 const router = Router();
 
@@ -105,6 +112,31 @@ router.post('/', createPage);
  *         description: Page not found
  */
 router.put('/:id', updatePage);
+
+/**
+ * @swagger
+ * /api/pages/{id}:
+ *   get:
+ *     summary: Get a page by ID
+ *     tags: [Pages]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID of the page
+ *     responses:
+ *       200:
+ *         description: Page retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Page'
+ *       404:
+ *         description: Page not found
+ */
+router.get('/:id', getPage);
 
 /**
  * @swagger

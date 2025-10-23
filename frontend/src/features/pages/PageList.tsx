@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { usePages } from '../../hooks/usePages';
-import { Plus, FileText, Sparkles } from 'lucide-react';
+import { Plus, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/authStore';
+import { useNavigate } from 'react-router-dom';
 import PageModal from './PageModal';
 import NewPageModal from './NewPageModal';
 
@@ -11,6 +12,8 @@ export default function PageList() {
   const user = useAuthStore((s) => s.user);
   const [selectedPage, setSelectedPage] = useState(null);
   const [showNewModal, setShowNewModal] = useState(false);
+
+  const navigate = useNavigate();
 
   if (isLoading) return <div className="text-center py-20 text-gray-500">Loading pages...</div>;
   if (isError) return <div className="text-center py-20 text-red-500">Error loading pages</div>;
@@ -39,7 +42,7 @@ export default function PageList() {
                 key={page.id}
                 whileHover={{ scale: 1.01 }}
                 transition={{ type: 'spring', stiffness: 300 }}
-                onClick={() => setSelectedPage(page)}
+                onClick={() => navigate(`/pages/${page.id}`)}
                 className="block p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
               >
                 <h2 className="text-xl font-semibold text-gray-800 mb-1">

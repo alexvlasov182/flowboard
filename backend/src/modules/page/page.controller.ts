@@ -36,6 +36,20 @@ export const createPage = async (
   }
 };
 
+export const getPage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = Number(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ success: false, message: 'Invalid page ID' });
+
+    const page = await pageService.getPageById(id);
+    if (!page) return res.status(404).json({ success: false, message: 'Page not found' });
+
+    res.json({ success: true, data: page });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updatePage = async (
   req: Request<{ id: string }, {}, UpdatePageDTO>,
   res: Response,

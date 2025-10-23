@@ -7,6 +7,7 @@ import NewPage from '../features/pages/NewPage';
 import SignupPage from '../features/auth/SignupPage';
 import MainDashboard from '../features/pages/MainDashboard';
 import LandingPage from '../components/Landing/LandingPage';
+import PageDetails from '../features/pages/PageDetails';
 
 // Protected routes wrapper
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -44,6 +45,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth>
             <PageList />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '/pages/:id',
+        element: (
+          <RequireAuth>
+            <PageDetails />
           </RequireAuth>
         ),
       },

@@ -9,6 +9,10 @@ export const getUserPages = async (userId: number) => {
   return prisma.page.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } });
 };
 
+export const getPageById = async (id: number) => {
+  return prisma.page.findUnique({ where: { id } });
+};
+
 export const createPage = async (data: CreatePageDTO) => {
   return prisma.page.create({ data });
 };
