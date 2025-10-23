@@ -5,8 +5,10 @@ import { usePages } from '../../hooks/usePages';
 import { useAuthStore } from '../../store/authStore';
 import NewPageModal from '../pages/NewPageModal';
 import PageModal from '../pages/PageModal';
+import { useNavigate } from 'react-router-dom';
 
 export default function MainDashboard() {
+  const navigate = useNavigate();
   const { data: response, isLoading, isError, refetch } = usePages();
   const user = useAuthStore((s) => s.user);
   const [showNewModal, setShowNewModal] = useState(false);
@@ -70,7 +72,6 @@ export default function MainDashboard() {
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center justify-center mt-20 py-16 px-8 text-center"
           >
-            {/* Icon */}
             <div className="relative">
               <div className="absolute inset-0 bg-brand-100 rounded-full blur-2xl opacity-50"></div>
               <div className="relative p-6 rounded-2xl">
@@ -78,12 +79,24 @@ export default function MainDashboard() {
               </div>
             </div>
 
-            {/* Text */}
             <h3 className="text-2xl font-semibold text-gray-800 mb-2">No pages yet</h3>
             <p className="text-gray-500 text-center max-w-md mb-8">
-              You don't have any pages yet. Start creating to organize your thoughts and projects.
+              You don’t have any pages yet. Start creating to organize your thoughts and projects.
             </p>
           </motion.div>
+        )}
+
+        {/* Link to All Pages */}
+        {totalPages > 0 && (
+          <div className="mt-12 text-center">
+            <button
+              onClick={() => navigate('/pages')}
+              className="inline-flex items-center text-brand-600 hover:text-brand-700 font-medium group"
+            >
+              <span>All pages</span>
+              <span className="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+            </button>
+          </div>
         )}
       </div>
 
