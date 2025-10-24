@@ -5,11 +5,14 @@ import { ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../../lib/api';
 import { debounce } from 'lodash';
+import { useThemeStore } from '../../store/themeStore';
 
 export default function PageDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getPageById } = usePages();
+  const { theme } = useThemeStore();
+  const isDark = theme === 'dark';
 
   const [page, setPage] = useState<{ title: string; content: string } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,8 +56,13 @@ export default function PageDetails() {
     debouncedSave({ [field]: value });
   };
 
-  if (loading) return <p className="text-gray-500">Loading page...</p>;
-  if (!page) return <p className="text-gray-500">Page not found.</p>;
+  if (loading) {
+    return <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Loading page...</p>;
+  }
+
+  if (!page) {
+    return <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Page not found.</p>;
+  }
 
   return (
     <motion.div
@@ -64,25 +72,34 @@ export default function PageDetails() {
     >
       <button
         onClick={() => navigate('/pages')}
-        className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition"
+        className={`flex items-center gap-2 text-sm transition ${
+          isDark ? 'text-gray-400 hover:text-gray-200' : 'text-gray-600 hover:text-gray-800'
+        }`}
       >
         <ArrowLeft size={16} /> Back to Pages
       </button>
 
       <input
-        className="w-full text-3xl font-semibold text-gray-900 border-none focus:outline-none bg-transparent"
+        className={`w-full text-3xl font-semibold border-none focus:outline-none bg-transparent ${
+          isDark ? 'text-white placeholder-gray-600' : 'text-gray-900 placeholder-gray-400'
+        }`}
         value={page.title}
         onChange={(e) => handleChange('title', e.target.value)}
+        placeholder="Untitled"
       />
 
       <textarea
-        className="w-full h-[60vh] text-gray-800 bg-white border border-gray-200 rounded-lg p-4 shadow-sm focus:ring-2 focus:ring-brand-400 focus:outline-none"
+        className={`w-full h-[60vh] rounded-lg p-4 shadow-sm focus:ring-2 focus:ring-brand-400 focus:outline-none transition-colors ${
+          isDark
+            ? 'bg-white/5 border-white/10 text-gray-100 placeholder-gray-500'
+            : 'bg-white border-gray-200 text-gray-800 placeholder-gray-400'
+        }`}
         value={page.content}
         onChange={(e) => handleChange('content', e.target.value)}
         placeholder="Start writing your notes..."
       />
 
-      <div className="text-sm text-gray-500">
+      <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
         {status === 'saving' && '💾 Saving...'}
         {status === 'saved' && '✅ All changes saved'}
         {status === 'error' && '❌ Failed to save'}

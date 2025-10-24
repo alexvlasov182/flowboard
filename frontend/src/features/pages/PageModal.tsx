@@ -54,7 +54,7 @@ export default function PageModal({ isOpen, onClose, page, onDeleted, onUpdated 
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full text-xl font-medium border-b border-gray-200 focus:outline-none pb-2"
+            className="w-full text-xl font-medium border-b border-gray-200 text-gray-700 focus:outline-none pb-2"
           />
           <textarea
             value={content}

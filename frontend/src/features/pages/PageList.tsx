@@ -8,10 +8,13 @@ import PageModal from './PageModal';
 import NewPageModal from './NewPageModal';
 import DeletePageModal from '../../components/ui/DeletePageModal';
 import { useDeletePage } from '../../hooks/useDeletePage';
+import { useThemeStore } from '../../store/themeStore';
 
 export default function PageList() {
   const { data: response, isLoading, isError, refetch } = usePages();
   const user = useAuthStore((s) => s.user);
+  const { theme } = useThemeStore();
+  const isDark = theme === 'dark';
   const [selectedPage, setSelectedPage] = useState(null);
   const [showNewModal, setShowNewModal] = useState(false);
   const [deletePage, setDeletePage] = useState<any>(null);
@@ -20,8 +23,21 @@ export default function PageList() {
 
   const { mutate: deletePageMutate, isPending: isDeleting } = useDeletePage();
 
-  if (isLoading) return <div className="text-center py-20 text-gray-500">Loading pages...</div>;
-  if (isError) return <div className="text-center py-20 text-red-500">Error loading pages</div>;
+  if (isLoading) {
+    return (
+      <div className={`text-center py-20 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+        Loading pages...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className={`text-center py-20 ${isDark ? 'text-red-400' : 'text-red-500'}`}>
+        Error loading pages
+      </div>
+    );
+  }
 
   const pages = response?.data || [];
   const userPages = pages.filter((p: any) => p.userId === user?.id);
@@ -36,7 +52,9 @@ export default function PageList() {
     <div className="relative flex flex-col items-center min-h-screen py-16 px-4">
       <div className="w-full max-w-4xl">
         <div className="flex items-center justify-between mb-10">
-          <h1 className="text-4xl font-bold text-gray-900">Your Pages</h1>
+          <h1 className={`text-4xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Your Pages
+          </h1>
 
           <button
             onClick={() => setShowNewModal(true)}
@@ -53,23 +71,39 @@ export default function PageList() {
                 key={page.id}
                 whileHover={{ scale: 1.01 }}
                 transition={{ type: 'spring', stiffness: 300 }}
-                className="relative block p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition"
+                className={`relative block p-5 rounded-xl shadow-sm hover:shadow-md transition ${
+                  isDark
+                    ? 'bg-white/5 border border-white/10 hover:bg-white/10'
+                    : 'bg-white border border-gray-200'
+                }`}
               >
+                {/* Clickable area for navigation */}
                 <div onClick={() => navigate(`/pages/${page.id}`)} className="cursor-pointer pr-10">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-1">
+                  <h2
+                    className={`text-xl font-semibold mb-1 ${
+                      isDark ? 'text-white' : 'text-gray-800'
+                    }`}
+                  >
                     {page.title || 'Untitled'}
                   </h2>
-                  <p className="text-gray-500 text-sm line-clamp-2">
+                  <p
+                    className={`text-sm line-clamp-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}
+                  >
                     {page.content?.slice(0, 120) || 'No content yet...'}
                   </p>
                 </div>
 
+                {/* Delete button */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     setDeletePage(page);
                   }}
-                  className="absolute top-5 right-5 text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition"
+                  className={`absolute top-5 right-5 p-2 rounded-full transition ${
+                    isDark
+                      ? 'text-red-400 hover:text-red-300 hover:bg-red-500/10'
+                      : 'text-red-500 hover:text-red-700 hover:bg-red-50'
+                  }`}
                   title="Delete page"
                 >
                   <Trash2 size={18} />
@@ -84,14 +118,31 @@ export default function PageList() {
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center justify-center mt-20 py-16 px-8"
           >
+            {/* Icon */}
             <div className="relative">
-              <div className="absolute inset-0 bg-brand-100 rounded-full blur-2xl opacity-50"></div>
+              <div
+                className={`absolute inset-0 rounded-full blur-2xl opacity-50 ${
+                  isDark ? 'bg-brand-500/20' : 'bg-brand-100'
+                }`}
+              ></div>
               <div className="relative p-6 rounded-2xl">
-                <FileText size={48} className="text-gray-400" strokeWidth={1.5} />
+                <FileText
+                  size={48}
+                  className={isDark ? 'text-gray-600' : 'text-gray-400'}
+                  strokeWidth={1.5}
+                />
               </div>
             </div>
-            <h3 className="text-2xl font-semibold text-gray-800 mb-2">No pages yet</h3>
-            <p className="text-gray-500 text-center max-w-md mb-2">
+
+            {/* Text */}
+            <h3
+              className={`text-2xl font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-800'}`}
+            >
+              No pages yet
+            </h3>
+            <p
+              className={`text-center max-w-md mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}
+            >
               Get started by creating your first page. Organize your thoughts, ideas, and projects
               all in one place.
             </p>
