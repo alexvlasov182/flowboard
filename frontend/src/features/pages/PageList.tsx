@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import PageModal from './PageModal';
 import NewPageModal from './NewPageModal';
 import DeletePageModal from '../../components/ui/DeletePageModal';
-import api from '../../lib/api';
+import { useDeletePage } from '../../hooks/useDeletePage';
 
 export default function PageList() {
   const { data: response, isLoading, isError, refetch } = usePages();
@@ -15,9 +15,10 @@ export default function PageList() {
   const [selectedPage, setSelectedPage] = useState(null);
   const [showNewModal, setShowNewModal] = useState(false);
   const [deletePage, setDeletePage] = useState<any>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const navigate = useNavigate();
+
+  const { mutate: deletePageMutate, isPending: isDeleting } = useDeletePage();
 
   if (isLoading) return <div className="text-center py-20 text-gray-500">Loading pages...</div>;
   if (isError) return <div className="text-center py-20 text-red-500">Error loading pages</div>;
@@ -25,22 +26,10 @@ export default function PageList() {
   const pages = response?.data || [];
   const userPages = pages.filter((p: any) => p.userId === user?.id);
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = () => {
     if (!deletePage || isDeleting) return;
-
-    try {
-      setIsDeleting(true);
-      await api.delete(`/pages/${deletePage.id}`);
-      setDeletePage(null);
-      refetch();
-    } catch (err: any) {
-      console.error('Delete error:', err);
-      alert(
-        `Failed to delete page: ${err.response?.data?.message || err.message || 'Unknown error'}`
-      );
-    } finally {
-      setIsDeleting(false);
-    }
+    deletePageMutate(deletePage.id);
+    setDeletePage(null);
   };
 
   return (
@@ -66,7 +55,6 @@ export default function PageList() {
                 transition={{ type: 'spring', stiffness: 300 }}
                 className="relative block p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition"
               >
-                {/* Clickable area for navigation */}
                 <div onClick={() => navigate(`/pages/${page.id}`)} className="cursor-pointer pr-10">
                   <h2 className="text-xl font-semibold text-gray-800 mb-1">
                     {page.title || 'Untitled'}
@@ -76,7 +64,6 @@ export default function PageList() {
                   </p>
                 </div>
 
-                {/* Delete button */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -97,15 +84,12 @@ export default function PageList() {
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center justify-center mt-20 py-16 px-8"
           >
-            {/* Icon */}
             <div className="relative">
               <div className="absolute inset-0 bg-brand-100 rounded-full blur-2xl opacity-50"></div>
               <div className="relative p-6 rounded-2xl">
                 <FileText size={48} className="text-gray-400" strokeWidth={1.5} />
               </div>
             </div>
-
-            {/* Text */}
             <h3 className="text-2xl font-semibold text-gray-800 mb-2">No pages yet</h3>
             <p className="text-gray-500 text-center max-w-md mb-2">
               Get started by creating your first page. Organize your thoughts, ideas, and projects
