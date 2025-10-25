@@ -1,12 +1,26 @@
-FROM node:20-alpine
-
+FROM node:18-alpine
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+# Copy package files
+COPY package.json yarn.lock ./
 
+# Install dependencies
+RUN yarn install
+
+# Copy prisma schema
+COPY prisma ./prisma
+
+# Generate Prisma Client BEFORE copying other files
+RUN npx prisma generate
+
+# Copy source code
 COPY . .
 
+# Build TypeScript
+RUN yarn build
+
+# Expose port
 EXPOSE 4000
 
-CMD ["npm", "run", "dev"]
+# Start the application
+CMD ["node", "dist/server.js"]
